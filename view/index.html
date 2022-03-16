@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>Welcome page</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div style="text-align: center;margin-top: 5%;">
+            <h2>Hai welcome to Node Server Sent Events (SSE)</h2>
+            <!-- <a href="/login" >Login</a> -->
+            <div>
+                <input type="text" name="name" id="user" placeholder="enter user name to add"/>
+                <button id="add">Add User</button>
+            </div>
+
+            <div id="userData" style="margin-top: 3%;">
+                <h4 style="display:inline;">Names: </h4><p id="names"></p>
+
+                <label><b>Total: </b></label><p style="display: inline;" id="total">0</p>
+            </div>
+        </div>
+    </body>
+    <script>
+        $("#add").click(function(){
+            //alert("Text: " + $("#user").val());
+            //  adding name to the existing data.
+            $.ajax({url: "http://127.0.0.1:8081/adduser", type:'POST', data:{'name':$("#user").val()}, success: function(result){
+                $("#names").text(result.names);
+                $("#total").text(result.total);
+            }});
+            
+            $("#user").val('');
+        });
+
+        //  Onload retrive updated data.
+        $.ajax({url: "http://127.0.0.1:8081/usersDat", success: function(result){
+            $("#names").text(result.names);
+            $("#total").text(result.total);
+        }});
+        //  getting data from server sent events.
+        const eventSource = new EventSource('http://127.0.0.1:8081/users')
+
+        eventSource.onmessage = (event) => {
+            console.log(event.data);
+            console.log("inside message");
+            data = JSON.parse(event.data);
+            console.log(data.names);
+            $("#names").text(data.names);
+            $("#total").text(data.total);
+        };
+        eventSource.onerror = () => {
+            console.log("server closed");
+            eventSource.close();
+        };
+        
+        
+    </script>
+</html>
