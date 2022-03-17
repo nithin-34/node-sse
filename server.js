@@ -75,10 +75,16 @@ app.get('/', function(req, resp){
   });
 
 //Node host and port defined
-const hostname = '127.0.0.1';
-const port = 8081;
+// const hostname = '127.0.0.1';
+// const port = 8081;
 
 //listeing to port 
-app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-  });
+// app.listen(port, hostname, () => {
+//     console.log(`Server running at http://${hostname}:${port}/`);
+//   });
+
+  var server = app.listen(process.env.PORT || 3000, function () {
+    var host = server.address().address
+    var port = server.address().port
+    console.log('App listening at http://%s:%s', host, port)
+  })
