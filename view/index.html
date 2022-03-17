@@ -23,7 +23,7 @@
         $("#add").click(function(){
             //alert("Text: " + $("#user").val());
             //  adding name to the existing data.
-            $.ajax({url: "http://127.0.0.1:8081/adduser", type:'POST', data:{'name':$("#user").val()}, success: function(result){
+            $.ajax({url: "/adduser", type:'POST', data:{'name':$("#user").val()}, success: function(result){
                 $("#names").text(result.names);
                 $("#total").text(result.total);
             }});
@@ -32,12 +32,12 @@
         });
 
         //  Onload retrive updated data.
-        $.ajax({url: "http://127.0.0.1:8081/usersDat", success: function(result){
+        $.ajax({url: "/usersDat", success: function(result){
             $("#names").text(result.names);
             $("#total").text(result.total);
         }});
         //  getting data from server sent events.
-        const eventSource = new EventSource('http://127.0.0.1:8081/users')
+        const eventSource = new EventSource('/users')
 
         eventSource.onmessage = (event) => {
             console.log(event.data);
