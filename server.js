@@ -70,8 +70,8 @@ app.get('/usersDat', function(req, resp){
 
 //Landing page view
 app.get('/', function(req, resp){
-    //console.log(__dirname + '\\views\\index.html');
-    resp.sendFile(__dirname + '\\views\\index.html');
+    console.log(__dirname + '\\views\\index.html');
+    resp.sendFile(__dirname + '//views//index.html');
   });
 
 //Node host and port defined
