@@ -21,7 +21,7 @@
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io("https://node-sse.osc-fr1.scalingo.io/");
+        const socket = io("https://node-sse.osc-fr1.scalingo.io");
         socket.emit('connected', 201);
         socket.on("updatedStatus", (status) =>{
             alert("hey iam in");
