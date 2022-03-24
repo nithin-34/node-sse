@@ -2,7 +2,12 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const EventEmitter = require('events');
+const { Socket } = require('socket.io');
 const emitter = new EventEmitter();
+
+var server = require('http').createServer(app);
+var socketIo = require('socket.io')(server);
+var mdmtUsers = [];
 
 let globalVal = 1;
 let localVal = 0;
@@ -104,7 +109,7 @@ app.get('/orderStatus', (req, resp) => {
 app.post('/statusUpdated', (req, resp) => {
   resp.send("ok")
   console.log(req.body);
-  emitter.emit('order', req.body);
+  emitter.emit('status', req.body);
 })
 
 //Landing page view
@@ -112,6 +117,25 @@ app.get('/', function(req, resp){
     console.log(__dirname + '//view//index.html');
     resp.sendFile(__dirname + '//view//index.html');
   });
+
+socketIo.on('connection', function(socket){
+    console.log("socket connected");
+  
+    socket.on("connected", function(userId){
+      console.log("user added");
+      mdmtUsers[userId] = socket.id;
+    });
+  
+    emitter.on('status', (orderStatus) => {
+      console.log("Inside socketIO emitter status");
+      //resp.write(`data: ${JSON.stringify(orderStatus)}\n\n`);
+      console.log(mdmtUsers[orderStatus.userid]);
+      console.log("-------------------");
+      socket.to(mdmtUsers[orderStatus.userid]).emit("updatedStatus", orderStatus);
+    });
+  
+  
+  })
 
 //Node host and port defined
 // const hostname = '127.0.0.1';
@@ -122,7 +146,7 @@ app.get('/', function(req, resp){
 //     console.log(`Server running at http://${hostname}:${port}/`);
 //   });
 
-  var server = app.listen(process.env.PORT || 3000, function () {
+  server.listen(process.env.PORT || 3000, function () {
     var host = server.address().address
     var port = server.address().port
     console.log('App listening at http://%s:%s', host, port)
