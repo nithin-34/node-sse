@@ -17,6 +17,10 @@
 
                 <label><b>Total: </b></label><p style="display: inline;" id="total">0</p>
             </div>
+            <div>
+                <input type="text" name="name" id="userid" placeholder="enter userid to add"/>
+                <button id="userAdd">Add UserId</button>
+            </div>
         </div>
     </body>
     <script src="/socket.io/socket.io.js"></script>
@@ -60,6 +64,18 @@
             console.log("server closed");
             eventSource.close();
         };
+        //testing socketio
+        $("#userAdd").click(function(){
+            //alert("Text: " + $("#user").val());
+            //  adding name to the existing data.
+            $.ajax({url: "/statusUpdated", type:'POST', data:{'userid':$("#userid").val()}, success: function(result){
+                // $("#names").text(result.names);
+                // $("#total").text(result.total);
+                console.log("ok socket0");
+            }});
+            
+            $("#userid").val('');
+        });
         
         
     </script>
