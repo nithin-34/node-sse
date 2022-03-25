@@ -122,8 +122,11 @@ socketIo.on('connection', function(socket){
     console.log("socket connected");
   
     socket.on("connected", function(userId){
-      console.log("user added "+ userId);
-      mdmtUsers[userId] = socket.id;
+      console.log("user Id received "+ userId);
+        if((userId != "" || userId != null) && !(mdmtUsers.includes(userId))){
+            console.log("user Id added "+ userId);
+            mdmtUsers[userId] = socket.id;
+        }
         console.log(JSON.stringify(mdmtUsers));
     });
   
