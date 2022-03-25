@@ -122,8 +122,9 @@ socketIo.on('connection', function(socket){
     console.log("socket connected");
   
     socket.on("connected", function(userId){
-      console.log("user added");
+      console.log("user added "+ userId);
       mdmtUsers[userId] = socket.id;
+        console.log(JSON.stringify(msmtUsers));
     });
   
     emitter.on('status', (orderStatus) => {
