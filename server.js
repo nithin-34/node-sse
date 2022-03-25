@@ -130,6 +130,8 @@ socketIo.on('connection', function(socket){
     emitter.on('status', (orderStatus) => {
       console.log("Inside socketIO emitter status");
       //resp.write(`data: ${JSON.stringify(orderStatus)}\n\n`);
+      console.log("++++++++++++++++++++++++");
+      console.log(JSON.stringify(mdmtUsers));
       console.log(mdmtUsers[orderStatus.userid]);
       console.log("-------------------");
       socket.to(mdmtUsers[orderStatus.userid]).emit("updatedStatus", orderStatus);
