@@ -7,6 +7,7 @@ const emitter = new EventEmitter();
 
 var server = require('http').createServer(app);
 var socketIo = require('socket.io')(server);
+const orders = socketIo.of('/orders');
 var mdmtUsers = [];
 
 let globalVal = 1;
@@ -109,7 +110,7 @@ app.get('/orderStatus', (req, resp) => {
 app.post('/statusUpdated', (req, resp) => {
   resp.send("ok")
   console.log(req.body);
-  emitter.emit('status', req.body);
+  emitter.emit('statusChanged', req.body);
 })
 
 //Landing page view
@@ -118,7 +119,7 @@ app.get('/', function(req, resp){
     resp.sendFile(__dirname + '//view//index.html');
   });
 
-socketIo.on('connection', function(socket){
+  socketIo.on('connection', function(socket){
     console.log("socket connected");
   
     socket.on("connected", function(userId){
@@ -128,20 +129,37 @@ socketIo.on('connection', function(socket){
             mdmtUsers[userId] = socket.id;
         }
         console.log(JSON.stringify(mdmtUsers));
-    });
-  
-    emitter.on('status', (orderStatus) => {
-      console.log("Inside socketIO emitter status");
-      //resp.write(`data: ${JSON.stringify(orderStatus)}\n\n`);
-      console.log("++++++++++++++++++++++++");
-      console.log(JSON.stringify(mdmtUsers));
-      console.log(mdmtUsers[orderStatus.userid]);
-      console.log("-------------------");
-      socket.to(mdmtUsers[orderStatus.userid]).emit("updatedStatus", orderStatus);
-    });
-  
+    });  
   
   })
+
+  emitter.on('status', (orderStatus) => {
+    console.log("Inside socketIO emitter status");
+    //resp.write(`data: ${JSON.stringify(orderStatus)}\n\n`);
+    console.log("++++++++++++++++++++++++");
+    console.log(JSON.stringify(mdmtUsers));
+    console.log(mdmtUsers[orderStatus.userid]);
+    console.log("-------------------");
+    socketIo.to(mdmtUsers[orderStatus.userid]).emit("updatedStatus", orderStatus);
+  });
+
+  orders.on('connection', function(order){
+    console.log("socket connected");
+  
+    order.on("connected", function(userId){
+      console.log(`user ${userId} added in orders`);
+      //mdmtUsers[userId] = order.id;
+      order.join(`order_${userId}`);
+    });
+  
+  })
+  
+  emitter.on('statusChanged', (orderStatus) => {
+    console.log(`statusChanged emitted for user ${orderStatus.userid}`);
+    //console.log(mdmtUsers[orderStatus.userid]);
+    console.log("-------------------");
+    orders.to(`order_${orderStatus.userid}`).emit("updatedStatus", orderStatus);
+  });
 
 //Node host and port defined
 // const hostname = '127.0.0.1';
